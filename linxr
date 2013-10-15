@@ -20,13 +20,10 @@ case ${ARG} in
         daemon -n linxr --restart
 	;;
     status)
-	echo "Status daemon -n linxr --running"
 	daemon -n linxr --running
-	if [ ${?} == 0 ]
+	if [ ${?} = 0 ]
 	then
 	    echo "Running"
-	else
-	    echo "Not Running"
 	fi
 	;;
 esac
