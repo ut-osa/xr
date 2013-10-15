@@ -1,7 +1,9 @@
 CC = gcc-4.5
 CFLAGS = -g
-
 LEX = flex
+ifneq ($wildcard make.local.conf),)
+include make.local.conf
+endif
 
 PLUGIN_DIR = $(shell $(CC) -print-file-name=plugin)
 tagger.so: OBJS = tagger.o collapse_name.tagger.o
