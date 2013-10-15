@@ -10,7 +10,13 @@
 #include <target.h>
 #include <function.h>
 #include <cgraph.h>
+#if (__GNUC__ < 4 || (__GNUC__ == 4 && __GNUC_MINOR__ < 5))
+#error "Unsupported gcc version!"
+#elif (__GNUC__ == 4 && __GNUC_MINOR__ == 5)
 #include <c-pragma.h>
+#elif (__GNUC__ == 4 && __GNUC_MINOR__ > 5)
+#include <c-family/c-pragma.h>
+#endif
 #include <cpplib.h>
 #include <pointer-set.h>
 
@@ -232,8 +238,7 @@ static void xr_file_change(cpp_reader *r, const struct line_map *lm)
 
       if (stat(name_buf, &st) == -1) {
          if (errno != ENOENT) {
-            fprintf(stderr, "%s: Cannot stat %s: %s\n", self, name_buf,
-                  strerror(errno));
+            fprintf(stderr, "%s: Cannot stat %s: %m\n", self, name_buf);
             perror(self);
             exit(1);
          }
@@ -248,8 +253,7 @@ static void xr_file_change(cpp_reader *r, const struct line_map *lm)
 
             if (mkdir(name_buf, S_IRWXU|S_IRGRP|S_IXGRP|S_IROTH|S_IXOTH) == -1
                   && errno != EEXIST) {
-               fprintf(stderr, "%s: Cannot create %s: %s\n", self, name_buf,
-                     strerror(errno));
+               fprintf(stderr, "%s: Cannot create %s: %m\n", self, name_buf);
                exit(1);
             }
 
@@ -259,8 +263,7 @@ static void xr_file_change(cpp_reader *r, const struct line_map *lm)
          
          if (open(name_buf, O_RDONLY|O_CREAT, S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH)
                == -1) {
-            fprintf(stderr, "%s: Cannot stat %s: %s\n", self, name_buf,
-                  strerror(errno));
+            fprintf(stderr, "%s: Cannot stat %s: %m\n", self, name_buf);
             exit(1);
          }
       }
@@ -304,16 +307,15 @@ static void xr_finish(void *gcc_data, void *user_data)
 		strcpy(name_buf + last_len, ".gcc_tags");
 
       if (rename(tmp_tags, name_buf) == -1) {
-         fprintf(stderr, "%s: Cannot rename %s -> %s: %s\n", self, tmp_tags,
-               name_buf, strerror(errno));
+         fprintf(stderr, "%s: Cannot rename %s -> %s: %m\n", self, tmp_tags,
+               name_buf);
          exit(1);
       }
 
       name_buf[last_len] = 0;
       dprintf(out_fd, "%s", name_buf);
    } else if (unlink(tmp_tags) == -1) {
-      fprintf(stderr, "%s: Cannot unlink %s: %s\n", self, tmp_tags,
-            strerror(errno));
+      fprintf(stderr, "%s: Cannot unlink %s: %m\n", self, tmp_tags);
       exit(1);
    }
 }
@@ -355,11 +357,11 @@ int plugin_init(struct plugin_name_args *info,
    strcpy(tmp_tags, output_base);
    strcpy(tmp_tags + output_base_len, tmplate);
    if ((tmp_fd = mkstemp(tmp_tags)) == -1) {
-      fprintf(stderr, "%s: Cannot create %s: %s\n", self, tmp_tags, strerror(errno));
+      fprintf(stderr, "%s: Cannot create %s: %m\n", self, tmp_tags);
       return 1;
    }
    if ((output_file = tag_fdopen(tmp_fd, "w")) == NULL) {
-      fprintf(stderr, "%s: Cannot open %s: %s\n", self, tmp_tags, strerror(errno));
+      fprintf(stderr, "%s: Cannot open %s: %m\n", self, tmp_tags);
       return 1;
    }
 
