@@ -20,7 +20,7 @@ c = {
    'j': 8,
    'verbose': 0,
 }
-if os.path.is_file('xr_local_config.py'):
+if os.path.isfile('xr_local_config.py'):
    with file('xr_local_config.py') as fin:
       c.update(eval(fin.read()))
 
