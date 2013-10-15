@@ -20,8 +20,8 @@ c = {
    'j': 8,
    'verbose': 0,
 }
-if os.path.isfile('xr_local_config.py'):
-   with file('xr_local_config.py') as fin:
+if os.path.isfile(os.path.join(xr, 'gen', 'xr_local_config.py')):
+   with file(os.path.join(xr, 'gen', 'xr_local_config.py')) as fin:
       c.update(eval(fin.read()))
 
 if 'input_base' in c and not c['input_base'].endswith("/"):
