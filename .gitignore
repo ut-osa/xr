@@ -4,8 +4,13 @@ tree
 objs
 
 ## compiled objects
+gen/asm_json
+gen/blocker
 gen/c_json
 gen/c_json
 gen/tags_json
 gen/tagger.so
 
+## local configuration
+gen/make.local.conf
+gen/xr_local_config.py
